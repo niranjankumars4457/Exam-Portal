@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ title }}</h1>
+    {% if subtitle %}<p class="muted">{{ subtitle }}</p>{% endif %}
+  </div>
+</div>
+<div class="card form-narrow">
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="errors">{{ form.non_field_errors }}</div>{% endif %}
+    {% include "_form_fields.html" %}
+    <div class="form-actions">
+      <button class="btn" type="submit">{{ submit_label|default:"Save" }}</button>
+      {% if extra_submit %}<button class="btn btn-ghost" type="submit" name="{{ extra_submit.0 }}" value="1">{{ extra_submit.1 }}</button>{% endif %}
+      <a class="btn btn-ghost" href="{% if back_args %}{% url back_url back_args.0 %}{% else %}{% url back_url %}{% endif %}">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

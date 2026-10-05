@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Hello, {{ user.first_name|default:user.username }}</h1>
+    <p class="muted">
+      {% if user.is_student_role %}Here is what is waiting for you.
+      {% elif user.is_teacher_role %}A summary of your exams and student results.
+      {% else %}A summary of the whole portal.{% endif %}
+    </p>
+  </div>
+  <div class="actions">
+    {% if user.is_student_role %}<a class="btn" href="{% url 'student_exams' %}">Browse exams</a>
+    {% else %}<a class="btn" href="{% url 'exam_create' %}">Create exam</a>{% endif %}
+  </div>
+</div>
+
+<div class="stats">
+  {% for label, value in stats %}
+  <div class="stat"><div class="stat-value">{{ value }}</div><div class="stat-label">{{ label }}</div></div>
+  {% endfor %}
+</div>
+
+<div class="{% if user.is_student_role %}grid-2{% endif %}">
+  {% if user.is_student_role %}
+  <section class="card">
+    <div class="card-head"><h2>Ready to take</h2><a class="small" href="{% url 'student_exams' %}">See all</a></div>
+    {% for exam in open_exams %}
+      <div class="card-head" style="border-top:1px solid var(--line);padding-top:12px;margin:0">
+        <div><strong>{{ exam.title }}</strong><div class="muted small">{{ exam.q }} questions &middot; {{ exam.duration_minutes }} min</div></div>
+        <a class="btn btn-small" href="{% url 'student_exams' %}">View</a>
+      </div>
+    {% empty %}
+      <div class="empty"><strong>You are all caught up</strong>New exams will appear here when they are published.</div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  <section class="card">
+    <div class="card-head"><h2>{% if user.is_student_role %}Recent results{% else %}Recent submissions{% endif %}</h2></div>
+    <div class="table-wrap">
+    <table class="table">
+      <thead><tr>{% if not user.is_student_role %}<th>Student</th>{% endif %}<th>Exam</th><th>Score</th><th>Result</th><th></th></tr></thead>
+      <tbody>
+      {% for a in recent %}
+        <tr>
+          {% if not user.is_student_role %}<td><strong>{{ a.student.display_name }}</strong></td>{% endif %}
+          <td>{{ a.exam.title }}</td>
+          <td>{{ a.score }}/{{ a.total_marks }} <span class="muted">({{ a.percentage }}%)</span></td>
+          <td>{% if a.passed %}<span class="badge good">Passed</span>{% else %}<span class="badge bad">Not passed</span>{% endif %}</td>
+          <td class="right"><a href="{% url 'result_detail' a.pk %}">Open</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5"><div class="empty"><strong>No results yet</strong>{% if user.is_student_role %}Finish an exam to see your score here.{% else %}Results appear when students submit exams.{% endif %}</div></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

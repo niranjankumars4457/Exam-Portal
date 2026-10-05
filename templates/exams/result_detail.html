@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Result{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>{{ attempt.exam.title }}</h1><p class="muted">{{ attempt.student.display_name }} &middot; submitted {{ attempt.submitted_at|date:"d M Y, h:i A" }}</p></div>
+  <div class="actions">
+    <a class="btn btn-ghost" href="{% url 'exam_ranklist' attempt.exam_id %}">Rank list</a>
+    <a class="btn" href="{% url 'result_pdf' attempt.pk %}">Download PDF</a>
+  </div>
+</div>
+<div class="stack">
+<section class="card">
+  <div class="result-hero">
+    <div class="ring {% if not attempt.passed %}fail{% endif %}" style="--deg: {{ ring }}deg">
+      <div class="ring-inner"><div><strong>{{ attempt.percentage|floatformat:0 }}%</strong><div class="muted small">{{ attempt.score }}/{{ attempt.total_marks }}</div></div></div>
+    </div>
+    <dl class="facts">
+      <div><dt>Result</dt><dd>{% if attempt.passed %}<span class="badge good">Passed</span>{% else %}<span class="badge bad">Not passed</span>{% endif %}</dd></div>
+      <div><dt>Rank</dt><dd>#{{ rank }}</dd></div>
+      <div><dt>Time taken</dt><dd>{{ attempt.time_taken_display }}</dd></div>
+      <div><dt>Pass mark</dt><dd>{{ attempt.exam.pass_percentage }}%</dd></div>
+    </dl>
+  </div>
+</section>
+<section class="card">
+  <div class="card-head"><h2>Answer review</h2></div>
+  {% for a in answers %}
+    <div class="review-item {% if a.is_correct %}correct{% else %}wrong{% endif %}">
+      <div class="review-q">{{ forloop.counter }}. {{ a.question.text }}</div>
+      <div class="small">
+        Your answer:
+        {% if a.selected %}<strong>{{ a.selected }}. {{ a.selected_text }}</strong>{% else %}<em class="muted">Not answered</em>{% endif %}
+        {% if a.is_correct %}<span class="badge good">Correct</span>{% else %}<span class="badge bad">Incorrect</span>{% endif %}
+      </div>
+      {% if not a.is_correct %}<div class="small muted">Correct answer: {{ a.question.correct_option }}. {{ a.correct_text }}</div>{% endif %}
+    </div>
+  {% endfor %}
+</section>
+</div>
+{% endblock %}

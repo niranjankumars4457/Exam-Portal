@@ -1,0 +1,24 @@
+{% extends "root.html" %}
+{% block body %}
+<div class="auth">
+  <section class="auth-side">
+    <a class="brand" href="{% url 'login' %}" style="padding:0"><span class="brand-mark">E</span> ExamPortal</a>
+    <div>
+      <h2>Take exams. See results instantly.</h2>
+      <p>A simple exam portal for colleges, with timed tests, automatic grading and downloadable result reports.</p>
+      <ul>
+        <li>Timed multiple-choice exams</li>
+        <li>Instant scores and answer review</li>
+        <li>Rank lists and PDF reports</li>
+      </ul>
+    </div>
+    <span></span>
+  </section>
+  <section class="auth-main">
+    <div class="auth-box">
+      {% include "_messages.html" %}
+      {% block auth_content %}{% endblock %}
+    </div>
+  </section>
+</div>
+{% endblock %}

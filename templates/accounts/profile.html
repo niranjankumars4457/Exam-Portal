@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}My profile{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>My profile</h1><p class="muted">Update your name or change your password.</p></div>
+</div>
+
+<div class="profile-grid">
+  <div class="stack">
+    <section class="card">
+      <div class="card-head"><h2>Your details</h2></div>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if profile_form.non_field_errors %}<div class="errors">{{ profile_form.non_field_errors }}</div>{% endif %}
+        {% include "_form_fields.html" with form=profile_form %}
+        <div class="form-actions">
+          <button class="btn" type="submit" name="save_profile" value="1">Save name</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Account</h2></div>
+      <dl style="margin:0">
+        <div class="info-row"><dt>Email (used to sign in)</dt><dd>{{ user.email|default:"Not set" }}</dd></div>
+        <div class="info-row"><dt>Role</dt><dd>{{ user.get_role_display }}</dd></div>
+        <div class="info-row"><dt>Member since</dt><dd>{{ user.date_joined|date:"d M Y" }}</dd></div>
+      </dl>
+      <p class="help" style="margin-top:10px">To change your email, ask an administrator.</p>
+    </section>
+  </div>
+
+  <section class="card">
+    <div class="card-head"><h2>Change password</h2></div>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if password_form.non_field_errors %}<div class="errors">{{ password_form.non_field_errors }}</div>{% endif %}
+      {% include "_form_fields.html" with form=password_form %}
+      <div class="form-actions">
+        <button class="btn" type="submit" name="change_password" value="1">Change password</button>
+      </div>
+    </form>
+  </section>
+</div>
+{% endblock %}

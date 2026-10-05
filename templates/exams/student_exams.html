@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Available exams{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>Available exams</h1><p class="muted">Each exam can be taken once. The timer starts when you begin.</p></div></div>
+{% if rows %}
+<div class="exam-grid">
+  {% for row in rows %}
+  {% with exam=row.exam attempt=row.attempt %}
+  <article class="card exam-card">
+    <div>
+      <h2>{{ exam.title }}</h2>
+      {% if exam.description %}<p class="muted small" style="margin-top:6px">{{ exam.description|truncatechars:140 }}</p>{% endif %}
+    </div>
+    <div class="meta">
+      <span class="badge">{{ exam.question_count }} questions</span>
+      <span class="badge">{{ exam.duration_minutes }} min</span>
+      <span class="badge">Pass: {{ exam.pass_percentage }}%</span>
+    </div>
+    <div class="grow"></div>
+    {% if attempt and attempt.is_submitted %}
+      <a class="btn btn-ghost" href="{% url 'result_detail' attempt.pk %}">View result</a>
+    {% elif attempt %}
+      <a class="btn" href="{% url 'exam_take' attempt.pk %}">Continue exam</a>
+    {% else %}
+      <form method="post" action="{% url 'exam_start' exam.pk %}" onsubmit="return confirm('Start now? The {{ exam.duration_minutes }} minute timer begins immediately.')">{% csrf_token %}
+        <button class="btn btn-block" type="submit">Start exam</button>
+      </form>
+    {% endif %}
+  </article>
+  {% endwith %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="card"><div class="empty"><strong>No exams available</strong>Check back when your teacher publishes one.</div></div>
+{% endif %}
+{% endblock %}

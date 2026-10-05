@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Exams{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Exams</h1><p class="muted">Create exams, add questions and publish them to students.</p></div>
+  <div class="actions"><a class="btn" href="{% url 'exam_create' %}">Create exam</a></div>
+</div>
+<div class="card table-wrap">
+  <table class="table">
+    <thead><tr><th>Exam</th>{% if user.is_admin_role %}<th>Teacher</th>{% endif %}<th>Questions</th><th>Duration</th><th>Submissions</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for exam in exams %}
+      <tr>
+        <td><a href="{% url 'exam_edit' exam.pk %}"><strong>{{ exam.title }}</strong></a></td>
+        {% if user.is_admin_role %}<td>{{ exam.created_by.display_name }}</td>{% endif %}
+        <td>{{ exam.question_count }}</td>
+        <td>{{ exam.duration_minutes }} min</td>
+        <td>{{ exam.attempt_count }}</td>
+        <td>{% if exam.is_published %}<span class="badge good">Published</span>{% else %}<span class="badge warn">Draft</span>{% endif %}</td>
+        <td class="right">
+          <a class="btn btn-ghost btn-small" href="{% url 'exam_edit' exam.pk %}">Edit</a>
+          <a class="btn btn-ghost btn-small" href="{% url 'exam_ranklist' exam.pk %}">Rank list</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7"><div class="empty"><strong>No exams yet</strong>Create your first exam to get started.</div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Users</h1><p class="muted">Add teachers and switch accounts on or off.</p></div>
+  <div class="actions">
+    <a class="btn" href="{% url 'teacher_create' %}">Add teacher</a>
+  </div>
+</div>
+<div class="actions" style="margin-bottom:16px">
+  <a class="btn btn-small {% if role %}btn-ghost{% endif %}" href="{% url 'user_list' %}">All</a>
+  <a class="btn btn-small {% if role != 'teacher' %}btn-ghost{% endif %}" href="?role=teacher">Teachers</a>
+  <a class="btn btn-small {% if role != 'student' %}btn-ghost{% endif %}" href="?role=student">Students</a>
+  <a class="btn btn-small {% if role != 'admin' %}btn-ghost{% endif %}" href="?role=admin">Admins</a>
+</div>
+<div class="card table-wrap">
+  <table class="table">
+    <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for u in users %}
+      <tr>
+        <td><strong>{{ u.display_name }}</strong></td>
+        <td class="muted">{{ u.email|default:"-" }}</td>
+        <td><span class="badge">{{ u.get_role_display }}</span></td>
+        <td>{% if u.is_active %}<span class="badge good">Active</span>{% else %}<span class="badge bad">Inactive</span>{% endif %}</td>
+        <td class="right">
+          {% if u != user %}
+          <form class="inline-form" method="post" action="{% url 'user_toggle' u.pk %}">{% csrf_token %}
+            <button class="btn btn-ghost btn-small" type="submit">{% if u.is_active %}Deactivate{% else %}Activate{% endif %}</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5"><div class="empty"><strong>No users found</strong>Try a different filter.</div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

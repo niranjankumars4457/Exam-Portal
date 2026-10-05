@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Rank list{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div><h1>Rank list</h1><p class="muted">{{ exam.title }}</p></div>
+  <div class="actions">
+    <a class="btn btn-ghost" href="{% if is_manager %}{% url 'exam_list' %}{% else %}{% url 'my_results' %}{% endif %}">Back</a>
+    <a class="btn" href="{% url 'exam_ranklist_pdf' exam.pk %}">Download PDF</a>
+  </div>
+</div>
+<div class="stats">
+  <div class="stat"><div class="stat-value">{{ attempts|length }}</div><div class="stat-label">Submissions</div></div>
+  <div class="stat"><div class="stat-value">{{ passed }}</div><div class="stat-label">Passed</div></div>
+  <div class="stat"><div class="stat-value">{% if average is not None %}{{ average|floatformat:0 }}%{% else %}-{% endif %}</div><div class="stat-label">Average score</div></div>
+</div>
+<div class="card table-wrap">
+  <table class="table">
+    <thead><tr><th>Rank</th><th>Student</th><th>Score</th><th>Percentage</th><th>Time taken</th><th>Result</th>{% if is_manager %}<th></th>{% endif %}</tr></thead>
+    <tbody>
+    {% for a in attempts %}
+      <tr>
+        <td><span class="rank-pill {% if a.rank <= 3 %}top{% endif %}">{{ a.rank }}</span></td>
+        <td><strong>{{ a.student.display_name }}</strong>{% if a.student == user %} <span class="badge">You</span>{% endif %}</td>
+        <td>{{ a.score }}/{{ a.total_marks }}</td>
+        <td>{{ a.percentage }}%</td>
+        <td>{{ a.time_taken_display }}</td>
+        <td>{% if a.passed %}<span class="badge good">Passed</span>{% else %}<span class="badge bad">Not passed</span>{% endif %}</td>
+        {% if is_manager %}<td class="right"><a href="{% url 'result_detail' a.pk %}">Review</a></td>{% endif %}
+      </tr>
+    {% empty %}
+      <tr><td colspan="7"><div class="empty"><strong>No submissions yet</strong>The rank list fills in as students finish the exam.</div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

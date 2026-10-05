@@ -1,0 +1,51 @@
+{% extends "root.html" %}
+{% load static %}
+{% block title %}{{ exam.title }}{% endblock %}
+{% block body %}
+<header class="exam-top">
+  <div>
+    <h1>{{ exam.title }}</h1>
+    <span class="muted small" id="answered-text">0 of {{ questions|length }} answered</span>
+  </div>
+  <div class="timer" id="timer" data-seconds="{{ attempt.seconds_left }}" role="timer" aria-live="off">
+    <span>Time left</span><span id="timer-text">--:--</span>
+  </div>
+</header>
+<div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
+
+<form method="post" id="exam-form">
+  {% csrf_token %}
+  <div class="take-layout">
+    <section class="card" id="stage">
+      {% for q in questions %}
+      <div class="question" data-index="{{ forloop.counter0 }}" {% if not forloop.first %}hidden{% endif %}>
+        <div class="q-count">Question {{ forloop.counter }} of {{ questions|length }} &middot; {{ q.marks }} mark{{ q.marks|pluralize }}</div>
+        <div class="q-text">{{ q.text }}</div>
+        {% for letter, text in q.choices %}
+        <label class="option">
+          <input type="radio" name="q_{{ q.id }}" value="{{ letter }}">
+          <span class="letter">{{ letter }}</span>
+          <span>{{ text }}</span>
+        </label>
+        {% endfor %}
+      </div>
+      {% endfor %}
+      <div class="q-nav">
+        <button class="btn btn-ghost" type="button" id="prev">Previous</button>
+        <button class="btn" type="button" id="next">Next</button>
+      </div>
+    </section>
+
+    <aside class="card side-sticky">
+      <h2>Questions</h2>
+      <div class="palette" id="palette">
+        {% for q in questions %}<button type="button" data-go="{{ forloop.counter0 }}" aria-label="Go to question {{ forloop.counter }}">{{ forloop.counter }}</button>{% endfor %}
+      </div>
+      <div class="legend"><span>Blue: current</span><span>Light: answered</span></div>
+      <button class="btn btn-block" type="button" id="submit-btn">Submit exam</button>
+      <p class="help" style="margin-top:10px">The exam submits automatically when the timer reaches zero.</p>
+    </aside>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/exam.js' %}"></script>{% endblock %}

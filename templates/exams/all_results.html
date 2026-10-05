@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}All results{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>All results</h1><p class="muted">Every submitted exam across the portal.</p></div></div>
+<div class="card table-wrap">
+  <table class="table">
+    <thead><tr><th>Student</th><th>Exam</th><th>Score</th><th>Result</th><th>Submitted</th><th></th></tr></thead>
+    <tbody>
+    {% for a in attempts %}
+      <tr>
+        <td><strong>{{ a.student.display_name }}</strong></td>
+        <td>{{ a.exam.title }}</td>
+        <td>{{ a.score }}/{{ a.total_marks }} <span class="muted">({{ a.percentage }}%)</span></td>
+        <td>{% if a.passed %}<span class="badge good">Passed</span>{% else %}<span class="badge bad">Not passed</span>{% endif %}</td>
+        <td class="muted">{{ a.submitted_at|date:"d M Y, h:i A" }}</td>
+        <td class="right"><a href="{% url 'result_detail' a.pk %}">Review</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6"><div class="empty"><strong>No results yet</strong>Results show up once students submit exams.</div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

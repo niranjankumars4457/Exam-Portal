@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}My results{% endblock %}
+{% block content %}
+<div class="page-head"><div><h1>My results</h1><p class="muted">Open a result to review answers, see your rank or download a PDF.</p></div></div>
+<div class="card table-wrap">
+  <table class="table">
+    <thead><tr><th>Exam</th><th>Score</th><th>Percentage</th><th>Result</th><th>Submitted</th><th></th></tr></thead>
+    <tbody>
+    {% for a in attempts %}
+      <tr>
+        <td><strong>{{ a.exam.title }}</strong></td>
+        <td>{{ a.score }}/{{ a.total_marks }}</td>
+        <td>{{ a.percentage }}%</td>
+        <td>{% if a.passed %}<span class="badge good">Passed</span>{% else %}<span class="badge bad">Not passed</span>{% endif %}</td>
+        <td class="muted">{{ a.submitted_at|date:"d M Y, h:i A" }}</td>
+        <td class="right">
+          <a class="btn btn-ghost btn-small" href="{% url 'result_detail' a.pk %}">Open</a>
+          <a class="btn btn-ghost btn-small" href="{% url 'result_pdf' a.pk %}">PDF</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6"><div class="empty"><strong>No results yet</strong>Complete an exam to see your score here.</div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

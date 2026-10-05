@@ -1,0 +1,14 @@
+{% extends "auth_base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block auth_content %}
+<h1>Sign in</h1>
+<p class="muted">Sign in with your email and password.</p>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}<div class="errors" style="margin-bottom:12px">{{ form.non_field_errors.0 }}</div>{% endif %}
+  {% include "_form_fields.html" %}
+  <input type="hidden" name="next" value="{{ next }}">
+  <button class="btn btn-block" type="submit">Sign in</button>
+</form>
+<p class="auth-alt muted">New student? <a href="{% url 'register' %}">Create an account</a></p>
+{% endblock %}

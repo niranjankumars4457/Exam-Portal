@@ -1,0 +1,4 @@
+Django>=4.2,<6.0
+reportlab>=4.0
+# Only needed if you switch to MySQL (see README):
+# mysqlclient>=2.2
